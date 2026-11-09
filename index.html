@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>จักรวาลของเรา</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap">
+<style>
+/* Layout: one long scroll. Hero with a live Milky Way, then 10 chapters (one per worksheet question), each pairing text with an animated stage; closing answer key. Dark by choice (deep space). */
+:root{
+  --void:#04050d; --deep:#0b0c20; --ink:#eeecff; --mute:#a9a7cf; --line:rgba(160,150,255,.2);
+  --violet:#9a86ff; --amber:#ffc978; --cyan:#78e6ff; --rose:#ff8fb8; --panel:rgba(14,13,34,.62);
+  --display:'Chakra Petch','Noto Sans Thai',system-ui,sans-serif;
+  --body:'Noto Sans Thai','Chakra Petch',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--void);color:var(--ink);font:400 clamp(16px,1.5vw,18px)/1.75 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:-1;display:block}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:var(--cyan)}
+#prog{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:3px;background:linear-gradient(90deg,var(--violet),var(--cyan),var(--amber));transform-origin:0 50%;transform:scaleX(0);z-index:30}
+
+/* hero */
+.hero{position:relative;padding-block:clamp(72px,13vh,150px) clamp(56px,9vh,110px);margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));overflow:hidden}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(4,5,13,.86) 0%,rgba(4,5,13,.5) 45%,rgba(4,5,13,0) 75%);pointer-events:none}
+.hero .wrap{position:relative;z-index:2}
+.eyebrow{font:600 .8rem/1 var(--display);letter-spacing:.2em;color:var(--amber);margin:0 0 20px}
+h1{font:700 clamp(3.6rem,15vw,9.5rem)/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.hero .sub{max-width:34rem;font-size:clamp(1.05rem,2.2vw,1.35rem);color:var(--ink);margin:18px 0 28px;text-wrap:pretty}
+.btn{font:600 1rem/1 var(--display);letter-spacing:.04em;color:#120d2c;background:var(--amber);border:0;border-radius:999px;padding:15px 26px;cursor:pointer;min-height:48px}
+.btn:hover{filter:brightness(1.08)}
+.btn:focus-visible,.dot:focus-visible,#next:focus-visible,.fill:focus-visible,.seg:focus-visible,input:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn[disabled]{opacity:.5;cursor:default}
+.crew{margin-top:38px;display:flex;flex-direction:column;gap:6px;font-size:.98rem;color:var(--mute)}
+.fill{display:inline-block;min-width:3ch;border-bottom:1px dashed var(--amber);color:var(--ink);padding:0 4px;cursor:text;word-break:break-word}
+.hint{font-size:.85rem;color:var(--mute);margin-top:22px}
+
+/* chapters */
+.sec{padding-block:clamp(56px,9vw,120px);border-top:1px solid var(--line)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:32px}
+@media(min-width:900px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(36px,5vw,72px);align-items:center}.flip .vis{order:-1}}
+.tag{font:600 .8rem/1 var(--display);letter-spacing:.2em;color:var(--amber);margin:0 0 14px}
+.tag i{font-style:normal;color:var(--mute)}
+.q{margin:0 0 6px;color:var(--mute);font-size:.98rem}
+.q b{font:600 .72rem/1 var(--display);letter-spacing:.18em;color:var(--violet);margin-right:8px}
+h2{font:700 clamp(2.3rem,7vw,4.4rem)/1.2 var(--display);margin:6px 0 0;text-wrap:balance;word-break:break-word}
+.en{font:500 .95rem/1.4 var(--display);letter-spacing:.14em;color:var(--cyan);margin:6px 0 18px;text-transform:uppercase}
+.lead{font-size:clamp(1.1rem,2vw,1.3rem);margin:0 0 22px;text-wrap:pretty}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 22px}
+.facts div{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;min-width:0}
+.facts dt{font-size:.8rem;color:var(--mute);margin:0}
+.facts dd{margin:2px 0 0;font:600 1.15rem/1.35 var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.note{margin:0;color:var(--mute);font-size:.98rem;text-wrap:pretty}
+.note b{color:var(--amber);font-weight:600;margin-right:6px}
+.stage{position:relative;aspect-ratio:1/.9;max-width:100%;border-radius:24px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(120% 100% at 50% 40%,#14153f 0%,#080918 62%,#04050d 100%)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cap{position:absolute;left:14px;right:14px;bottom:12px;font-size:.9rem;color:var(--ink);text-shadow:0 1px 8px #000;min-height:2.6em}
+.cap.top{top:12px;bottom:auto;font:600 1.05rem/1.3 var(--display);color:var(--amber);min-height:0}
+.ctrl{margin-top:16px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.ctrl label{font-size:.95rem;color:var(--mute);display:flex;flex-direction:column;gap:6px;flex:1 1 220px;min-width:0}
+.ctrl label output{color:var(--ink);font:600 1rem var(--display)}
+input[type=range]{width:100%;accent-color:var(--amber);height:28px}
+input[type=number]{font:600 1.1rem var(--display);width:100%;min-width:0;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.bar{display:flex;height:46px;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin:0 0 10px}
+.seg{display:flex;align-items:center;justify-content:center;font:600 .9rem var(--display);color:#0b0a1c;min-width:0;overflow:hidden}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 22px;font-size:.9rem;color:var(--mute)}
+.legend span{display:flex;gap:8px;align-items:baseline}
+.legend i{width:10px;height:10px;border-radius:50%;flex:none;transform:translateY(1px)}
+.formula{display:inline-block;font:600 clamp(1.1rem,3vw,1.5rem) var(--display);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 16px;margin:0 0 22px;color:var(--cyan);overflow-wrap:anywhere}
+
+/* light-year panel */
+.stage.panel{aspect-ratio:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.ly{display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.ly .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:baseline}
+.ly .nm{font-weight:500}
+.ly .v{font:500 .85rem var(--display);color:var(--amber);text-align:right;font-variant-numeric:tabular-nums}
+.ly .tr{grid-column:1/-1;height:6px;border-radius:3px;background:rgba(160,150,255,.12);overflow:hidden}
+.ly .tr u{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--violet),var(--cyan));text-decoration:none}
+.ly .tm{grid-column:1/-1;font-size:.82rem;color:var(--mute);margin-bottom:8px}
+.calc{border-top:1px solid var(--line);padding-top:14px;display:grid;gap:10px}
+.calc .res{display:grid;gap:6px;font-size:.95rem}
+.calc .res b{font:600 1.05rem var(--display);color:var(--amber)}
+
+/* answer key */
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin:34px 0 0;padding:0;list-style:none}
+.key li{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:2px;min-width:0}
+.key a{text-decoration:none;color:inherit;display:block}
+.key small{font:600 .72rem var(--display);letter-spacing:.16em;color:var(--violet)}
+.key strong{font:700 1.35rem/1.3 var(--display);overflow-wrap:anywhere}
+.key span{font-size:.88rem;color:var(--mute)}
+.end h2{font-size:clamp(2.2rem,6vw,3.8rem)}
+.end .crew{font-size:1.05rem}
+
+/* nav */
+#dots{position:fixed;right:calc(14px + env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%);display:none;flex-direction:column;gap:9px;z-index:20}
+@media(min-width:1100px){#dots{display:flex}}
+.dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--mute);background:transparent;padding:0;cursor:pointer}
+.dot.on{background:var(--amber);border-color:var(--amber);transform:scale(1.35)}
+#next{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:rgba(14,13,34,.85);color:var(--ink);cursor:pointer;z-index:25;display:grid;place-items:center}
+#next:hover{border-color:var(--amber);color:var(--amber)}
+.rv{animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{transform:translateY(22px)}to{transform:none}}
+@media(prefers-reduced-motion:reduce){.rv{animation:none}html{scroll-behavior:auto}}
+</style>
+
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="prog"></div>
+<nav id="dots" aria-label="สารบัญ"></nav>
+<button id="next" aria-label="ไปหัวข้อถัดไป"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+
+<header class="hero" data-sec data-title="หน้าแรก" id="s0">
+  <canvas id="cvHero" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="eyebrow">วิทยาศาสตร์ · เอกภพและกาแล็กซี</p>
+    <h1>จักรวาล<br>ของเรา</h1>
+    <p class="sub">เดินทางจากทางช้างเผือกไปถึงหลุมดำ ผ่าน 10 คำตอบจากเกมหาคำของกลุ่มเรา</p>
+    <button class="btn" id="start">เริ่มเดินทาง</button>
+    <div class="crew">
+      <div>นำเสนอโดย <span class="fill" contenteditable="true" spellcheck="false" data-k="grp" data-d="กลุ่มที่ …" title="คลิกเพื่อพิมพ์ชื่อกลุ่ม"></span> · ชั้น <span class="fill" contenteditable="true" spellcheck="false" data-k="cls" data-d="…" title="คลิกเพื่อพิมพ์ชั้น"></span></div>
+      <div>สมาชิก <span class="fill" contenteditable="true" spellcheck="false" data-k="mem" data-d="พิมพ์ชื่อสมาชิกที่นี่" title="คลิกเพื่อพิมพ์ชื่อสมาชิก"></span></div>
+    </div>
+    <p class="hint">กดลูกศรบนคีย์บอร์ด หรือปุ่มลูกศรมุมขวาล่าง เพื่อเปลี่ยนหัวข้อ</p>
+  </div>
+</header>
+
+<main id="chapters"></main>
+
+<footer class="sec end" data-sec data-title="สรุป" id="s11">
+  <div class="wrap">
+    <p class="tag">สรุป</p>
+    <h2>เฉลยเกมหาคำ 10 ข้อ</h2>
+    <p class="lead" style="max-width:40rem">แตะข้อใดก็ได้เพื่อย้อนกลับไปดูหัวข้อนั้น</p>
+    <ul class="key" id="key"></ul>
+    <div class="crew" style="margin-top:40px">
+      <div>ขอบคุณที่รับฟัง · <span class="fill" contenteditable="true" spellcheck="false" data-k="grp" data-d="กลุ่มที่ …"></span></div>
+      <div>สมาชิก <span class="fill" contenteditable="true" spellcheck="false" data-k="mem" data-d="พิมพ์ชื่อสมาชิกที่นี่"></span></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+var $=function(s,r){return (r||document).querySelector(s)};
+function gauss(){return (Math.random()+Math.random()+Math.random()+Math.random()-2)/2}
+function fmtTH(n){
+  var o={maximumFractionDigits:2};
+  if(n>=1e12)return (n/1e12).toLocaleString('en-US',o)+' ล้านล้าน';
+  if(n>=1e6)return (n/1e6).toLocaleString('en-US',o)+' ล้าน';
+  if(n>=100)return Math.round(n).toLocaleString('en-US');
+  return n.toLocaleString('en-US',o);
+}
+
+/* ---------- canvas helper: sizes to DPR, runs only while visible ---------- */
+function stage(cv,draw){
+  var ctx=cv.getContext('2d'),w=1,h=1,vis=false,t0=performance.now(),last=performance.now();
+  function size(){var d=Math.min(devicePixelRatio||1,2),r=cv.getBoundingClientRect();w=Math.max(1,r.width);h=Math.max(1,r.height);cv.width=Math.round(w*d);cv.height=Math.round(h*d);ctx.setTransform(d,0,0,d,0,0)}
+  new ResizeObserver(size).observe(cv);size();
+  new IntersectionObserver(function(e){vis=e[0].isIntersecting}).observe(cv);
+  function frame(now){
+    requestAnimationFrame(frame);
+    if(!vis){last=now;return}
+    var rdt=Math.min(.05,(now-last)/1000);last=now;
+    var t=RM?3:(now-t0)/1000;
+    ctx.clearRect(0,0,w,h);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;
+    draw(ctx,w,h,t,RM?0:rdt,rdt);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- galaxies ---------- */
+function makeGalaxy(kind){
+  var P=[],i,N,p,r,a,x,y,hue,arms;
+  if(kind==='spiral'||kind==='milky'){
+    arms=kind==='milky'?4:2;N=3400;var wind=kind==='milky'?4.2:5.4;
+    for(i=0;i<N;i++){
+      if(i<N*.22){r=Math.abs(gauss())*.17;a=Math.random()*6.283;x=Math.cos(a)*r*(kind==='milky'?1.9:1);y=Math.sin(a)*r*(kind==='milky'?.7:1);
+        if(kind==='milky'){var bx=x*Math.cos(.5)-y*Math.sin(.5);y=x*Math.sin(.5)+y*Math.cos(.5);x=bx}}
+      else{r=.12+Math.pow(Math.random(),.75)*.88;a=(i%arms)*6.283/arms+r*wind+gauss()*.32*(1.1-r*.5);x=Math.cos(a)*r;y=Math.sin(a)*r}
+      var rr=Math.min(1,Math.hypot(x,y));hue=Math.round(40+175*Math.pow(rr,.8));
+      P.push({x:x,y:y,s:Math.random()*1.7+.5,c:'hsla('+hue+',85%,'+Math.round(84-32*rr)+'%,'+(.3+Math.random()*.55).toFixed(2)+')'});
+    }
+  }else if(kind==='ellip'){
+    N=3400;var cs=Math.cos(.45),sn=Math.sin(.45);
+    for(i=0;i<N;i++){r=Math.pow(Math.abs(gauss()),1.15)*.66;a=Math.random()*6.283;x=Math.cos(a)*r;y=Math.sin(a)*r*.68;
+      var X=x*cs-y*sn,Y=x*sn+y*cs;hue=26+Math.round(r*40);
+      P.push({x:X,y:Y,s:Math.random()*1.6+.5,c:'hsla('+hue+',80%,'+Math.round(86-45*r)+'%,'+(.28+Math.random()*.5).toFixed(2)+')'});}
+  }else{
+    var C=[[-.4,-.1],[.1,-.38],[.38,.14],[-.12,.32],[0,0],[.42,-.3]],H=[205,265,320,190];
+    for(i=0;i<3000;i++){var c=C[i%6];x=c[0]+gauss()*.22*(.6+Math.random());y=c[1]+gauss()*.2*(.6+Math.random());hue=H[(Math.random()*4)|0];
+      var knot=Math.random()<.03;
+      P.push({x:x,y:y,s:knot?2.8:Math.random()*1.5+.5,c:knot?'hsla(330,90%,75%,.9)':'hsla('+hue+',80%,72%,'+(.3+Math.random()*.5).toFixed(2)+')'});}
+  }
+  return P;
+}
+function paintGalaxy(c,P,cx,cy,R,th,tilt,glow){
+  var cs=Math.cos(th),sn=Math.sin(th),g=c.createRadialGradient(cx,cy,0,cx,cy,R*.45);
+  g.addColorStop(0,'rgba(255,226,170,'+glow+')');g.addColorStop(1,'rgba(255,226,170,0)');
+  c.globalCompositeOperation='lighter';c.fillStyle=g;c.fillRect(cx-R,cy-R,R*2,R*2);
+  for(var i=0;i<P.length;i++){var p=P[i];c.fillStyle=p.c;c.fillRect(cx+(p.x*cs-p.y*sn)*R,cy+(p.x*sn+p.y*cs)*R*tilt,p.s,p.s)}
+  c.globalCompositeOperation='source-over';
+}
+
+/* ---------- page background: stars with parallax + shooting stars ---------- */
+(function(){
+  var cv=$('#bg'),c=cv.getContext('2d'),w,h,S=[],sh=null,nextSh=4;
+  function size(){var d=Math.min(devicePixelRatio||1,2);w=innerWidth;h=innerHeight;cv.width=w*d;cv.height=h*d;c.setTransform(d,0,0,d,0,0);
+    S=[];for(var i=0;i<Math.min(260,Math.round(w*h/5500));i++)S.push({x:Math.random(),y:Math.random(),z:Math.random(),p:Math.random()*6.28})}
+  addEventListener('resize',size);size();var last=performance.now();
+  function f(now){requestAnimationFrame(f);var dt=Math.min(.05,(now-last)/1000);last=now;var t=now/1000,sy=scrollY;
+    c.clearRect(0,0,w,h);
+    for(var i=0;i<S.length;i++){var s=S[i],y=((s.y*h-sy*s.z*.12)%h+h)%h,tw=RM?.7:.55+.45*Math.sin(t*(.6+s.z*1.4)+s.p);
+      c.fillStyle='rgba('+(s.z>.8?'200,215,255':'255,244,225')+','+(tw*(.35+s.z*.55)).toFixed(2)+')';var z=.5+s.z*1.3;c.fillRect(s.x*w,y,z,z)}
+    if(!RM){nextSh-=dt;if(nextSh<0&&!sh){sh={x:Math.random()*w*.8+w*.1,y:Math.random()*h*.4,l:0};nextSh=6+Math.random()*7}
+      if(sh){sh.l+=dt*1.4;var k=sh.l,x=sh.x+k*260,y2=sh.y+k*130;var g=c.createLinearGradient(x,y2,x-90,y2-45);g.addColorStop(0,'rgba(255,255,255,'+Math.max(0,1-k)+')');g.addColorStop(1,'rgba(255,255,255,0)');
+        c.strokeStyle=g;c.lineWidth=1.6;c.beginPath();c.moveTo(x,y2);c.lineTo(x-90,y2-45);c.stroke();if(k>1)sh=null}}
+  }
+  requestAnimationFrame(f);
+})();
+
+/* ---------- chapters ---------- */
+var CH=[
+{n:1,ans:'ทางช้างเผือก',en:'Milky Way',v:'milky',
+ q:'กาแล็กซีที่ระบบสุริยะของเราตั้งอยู่มีชื่อว่าอะไร?',
+ lead:'บ้านของเรา เป็นกาแล็กซีกังหันแบบมีคาน มีดาวฤกษ์หลายแสนล้านดวง และดวงอาทิตย์เป็นเพียงหนึ่งในนั้น',
+ f:[['เส้นผ่านศูนย์กลาง','≈ 100,000 ปีแสง'],['จำนวนดาวฤกษ์','100–400 พันล้านดวง'],['เราอยู่ห่างใจกลาง','≈ 26,000 ปีแสง'],['โคจรครบ 1 รอบ','≈ 230 ล้านปี']],
+ note:'ดวงอาทิตย์อยู่ในแขนนายพราน (Orion Arm) ที่เห็นเป็นแถบขาวพาดฟ้าตอนกลางคืน คือแสงรวมของดาวในจานกาแล็กซีที่เรามองเข้าไปทางด้านข้าง'},
+{n:2,ans:'กาแล็กซีกังหัน',en:'Spiral Galaxy',v:'spiral',
+ q:'กาแล็กซีที่มีโครงสร้างเป็นแขนโค้งหมุนวนออกจากใจกลาง เรียกว่ากาแล็กซีประเภทใด?',
+ lead:'มีทรงกลมสว่างตรงกลางและแขนโค้งที่หมุนวนออกมา แขนเหล่านี้เต็มไปด้วยก๊าซและดาวสีฟ้าอายุน้อย',
+ f:[['ส่วนประกอบ','ใจกลาง · จาน · ฮาโล'],['ดาวตามแขน','อายุน้อย สีฟ้า'],['ตัวอย่างใกล้เรา','แอนดรอเมดา (M31)'],['ระยะถึงแอนดรอเมดา','≈ 2.5 ล้านปีแสง']],
+ note:'ทางช้างเผือกก็เป็นกาแล็กซีกังหัน และกำลังเคลื่อนเข้าหาแอนดรอเมดา คาดว่าจะชนกันในอีกหลายพันล้านปี'},
+{n:3,ans:'กาแล็กซีรูปวงรี',en:'Elliptical Galaxy',v:'ellip',
+ q:'กาแล็กซีที่มีรูปร่างคล้ายทรงรีและมีลักษณะค่อนข้างกลม เรียกว่ากาแล็กซีประเภทใด?',
+ lead:'เป็นก้อนทรงรีเนียนๆ ไม่มีแขน ดาวส่วนใหญ่อายุมาก สีแดงถึงเหลือง และมีก๊าซฝุ่นน้อย จึงเกิดดาวใหม่น้อย',
+ f:[['รูปร่าง','กลมถึงรีมาก (E0–E7)'],['ดาวส่วนใหญ่','อายุมาก สีแดง-เหลือง'],['ตัวอย่าง','M87'],['ระยะถึง M87','≈ 53 ล้านปีแสง']],
+ note:'บางตำราเรียกว่ากาแล็กซีรูปไข่ กาแล็กซีรูปวงรีมีทั้งขนาดแคระและขนาดยักษ์ และ M87 คือกาแล็กซีที่มีหลุมดำดวงแรกที่มนุษย์ถ่ายภาพได้'},
+{n:4,ans:'กาแล็กซีไม่มีรูปร่าง',en:'Irregular Galaxy',v:'irreg',
+ q:'กาแล็กซีที่ไม่มีรูปร่างหรือโครงสร้างที่แน่นอน เรียกว่ากาแล็กซีประเภทใด?',
+ lead:'รูปทรงยุ่งเหยิง ไม่มีใจกลางชัดเจนและไม่มีแขน มักมีก๊าซมากและมีดาวเกิดใหม่จำนวนมาก',
+ f:[['สาเหตุที่เสียรูป','แรงโน้มถ่วงจากกาแล็กซีอื่น'],['ตัวอย่าง','เมฆแมเจลแลนใหญ่และเล็ก'],['ระยะถึงเมฆใหญ่','≈ 160,000 ปีแสง'],['การเกิดดาวใหม่','มาก']],
+ note:'เมฆแมเจลแลนมองเห็นด้วยตาเปล่าจากซีกโลกใต้ เป็นกาแล็กซีบริวารที่โคจรอยู่รอบทางช้างเผือก'},
+{n:5,ans:'ซูเปอร์โนวา',en:'Supernova',v:'nova',
+ q:'ปรากฏการณ์ที่ดาวฤกษ์ระเบิดอย่างรุนแรงในช่วงสุดท้ายของวิวัฒนาการ เรียกว่าอะไร?',
+ lead:'เมื่อดาวมวลมากใช้เชื้อเพลิงหมด แกนกลางจะยุบตัวในเสี้ยววินาที แล้วชั้นนอกถูกเหวี่ยงออกไปอย่างรุนแรง',
+ f:[['ดาวที่ระเบิดแบบนี้','มวล > 8 เท่าดวงอาทิตย์'],['ความสว่างช่วงสั้นๆ','เทียบเท่าทั้งกาแล็กซี'],['ซากที่เหลือ','ดาวนิวตรอนหรือหลุมดำ'],['ตัวอย่างซาก','เนบิวลาปู (ปี ค.ศ. 1054)']],
+ note:'ธาตุหนักอย่างเหล็กและแคลเซียมในร่างกายเรา ถูกสร้างในดาวและกระจายออกสู่อวกาศด้วยการระเบิดแบบนี้'},
+{n:6,ans:'หลุมดำ',en:'Black Hole',v:'bh',
+ q:'วัตถุท้องฟ้าที่มีแรงโน้มถ่วงสูงมากจนแม้แต่แสงก็ไม่สามารถหลุดออกมาได้ เรียกว่าอะไร?',
+ lead:'บริเวณที่มวลมหาศาลอัดแน่นอยู่ในที่เล็กมาก ความเร็วหลุดพ้นสูงกว่าความเร็วแสง ขอบเขตที่แสงออกไม่ได้เรียกว่าขอบฟ้าเหตุการณ์',
+ f:[['ความเร็วแสง','≈ 299,792 กม./วินาที'],['ใจกลางทางช้างเผือก','Sagittarius A*'],['มวลของ Sgr A*','≈ 4 ล้านเท่าดวงอาทิตย์'],['ภาพถ่ายแรก','M87* ปี ค.ศ. 2019']],
+ note:'หลุมดำไม่ได้ดูดทุกอย่างเหมือนเครื่องดูดฝุ่น ถ้าดวงอาทิตย์ถูกแทนด้วยหลุมดำมวลเท่ากัน โลกจะยังโคจรเหมือนเดิม (แต่มืดและหนาวมาก)'},
+{n:7,ans:'สสารมืด',en:'Dark Matter',v:'dm',
+ q:'สสารที่ไม่สามารถมองเห็นได้โดยตรง แต่สามารถตรวจพบได้จากอิทธิพลของแรงโน้มถ่วง เรียกว่าอะไร?',
+ lead:'ไม่ปล่อย ไม่สะท้อน และไม่ดูดกลืนแสง เรารู้ว่ามีอยู่เพราะกาแล็กซีหมุนเร็วเกินกว่าที่มวลซึ่งมองเห็นจะยึดไว้ได้',
+ f:[['สัดส่วนในเอกภพ','≈ 27%'],['หลักฐานสำคัญ','ดาวขอบกาแล็กซีหมุนเร็ว'],['ผู้เสนอแนวคิดแรกๆ','ฟริตซ์ ซวิกกี (ปี 1933)'],['ธรรมชาติที่แท้จริง','ยังไม่มีใครรู้']],
+ note:'ตรวจพบผ่านเลนส์ความโน้มถ่วงด้วย คือแสงจากกาแล็กซีไกลๆ โค้งงอเมื่อผ่านมวลที่เรามองไม่เห็น',
+ extra:'<div class="bar" role="img" aria-label="องค์ประกอบของเอกภพ: พลังงานมืด 68 เปอร์เซ็นต์ สสารมืด 27 เปอร์เซ็นต์ สสารปกติ 5 เปอร์เซ็นต์"><div class="seg" style="width:68%;background:#6f5fd0">พลังงานมืด 68%</div><div class="seg" style="width:27%;background:var(--amber)">สสารมืด 27%</div><div class="seg" style="width:5%;background:var(--cyan)"></div></div><div class="legend"><span><i style="background:#6f5fd0"></i>พลังงานมืด ≈ 68%</span><span><i style="background:var(--amber)"></i>สสารมืด ≈ 27%</span><span><i style="background:var(--cyan)"></i>สสารปกติ ≈ 5%</span></div>',
+ ctrl:'<button class="btn ghost" id="dmBtn" type="button">ซ่อนสสารมืด</button>'},
+{n:8,ans:'เนบิวลา',en:'Nebula',v:'neb',
+ q:'บริเวณในอวกาศที่ประกอบด้วยกลุ่มก๊าซและฝุ่นจำนวนมาก เรียกว่าอะไร?',
+ lead:'เมฆก๊าซไฮโดรเจน ฮีเลียม และฝุ่นระหว่างดาว เมื่อแรงโน้มถ่วงรวมก๊าซให้ยุบตัว ก็กลายเป็นดาวฤกษ์ดวงใหม่',
+ f:[['ประเภทหลัก','เปล่งแสง · สะท้อนแสง · มืด'],['เนบิวลานายพราน','≈ 1,300 ปีแสง'],['เสาแห่งการกำเนิด','≈ 7,000 ปีแสง'],['อีกชื่อหนึ่ง','โรงงานผลิตดาว']],
+ note:'คำว่า nebula มาจากภาษาละติน แปลว่าหมอกหรือเมฆ ซากของดาวที่ระเบิดและดาวที่ตายแล้วก็สร้างเนบิวลาได้เช่นกัน'},
+{n:9,ans:'แรงโน้มถ่วง',en:'Gravity',v:'grav',
+ q:'แรงที่ทำให้ดาวฤกษ์ ดาวเคราะห์ และวัตถุต่าง ๆ ดึงดูดเข้าหากัน เรียกว่าแรงอะไร?',
+ lead:'มวลทุกชิ้นดึงดูดกัน ยิ่งมวลมากแรงยิ่งมาก ยิ่งอยู่ไกลแรงยิ่งลดลงอย่างรวดเร็ว',
+ f:[['กฎของนิวตัน','ปี ค.ศ. 1687'],['ทฤษฎีของไอน์สไตน์','ปี ค.ศ. 1915'],['โลกโคจรรอบดวงอาทิตย์','≈ 30 กม./วินาที'],['ยึดไว้ด้วยกัน','ดาว ระบบสุริยะ กาแล็กซี']],
+ extra:'<div class="formula" aria-label="สูตรแรงโน้มถ่วง">F = G · m₁ · m₂ / r²</div>',
+ note:'ไอน์สไตน์อธิบายว่ามวลทำให้ปริภูมิและเวลาโค้ง วัตถุอื่นจึงเคลื่อนที่ไปตามความโค้งนั้น',
+ ctrl:'<label for="gm">มวลของดาวแม่ <output id="gmv">×1.0</output><input id="gm" type="range" min="0.3" max="3" step="0.1" value="1"></label>'},
+{n:10,ans:'ปีแสง',en:'Light-year',v:'ly',
+ q:'หน่วยที่ใช้วัดระยะทางในอวกาศ โดยอาศัยระยะทางที่แสงเดินทางในเวลา 1 ปี เรียกว่าอะไร?',
+ lead:'ปีแสงเป็นหน่วยของระยะทาง ไม่ใช่เวลา 1 ปีแสงคือระยะที่แสงเดินทางได้ใน 1 ปี',
+ f:[['1 ปีแสง','≈ 9.46 ล้านล้าน กม.'],['แสงจากดวงอาทิตย์ถึงโลก','≈ 8 นาที 20 วินาที'],['ดาวใกล้สุดนอกระบบ','Proxima ≈ 4.24 ปีแสง'],['ความเร็วแสง','≈ 299,792 กม./วินาที']],
+ note:'ยิ่งมองไกลยิ่งเห็นอดีต เมื่อเรามองแอนดรอเมดา เรากำลังเห็นแสงที่ออกเดินทางมาประมาณ 2.5 ล้านปีแล้ว'}
+];
+
+var LY=[['ดวงจันทร์','384,400 กม.','แสงใช้เวลา 1.3 วินาที',3.9],['ดวงอาทิตย์','149.6 ล้าน กม.','แสงใช้เวลา ≈ 8 นาที 20 วินาที',21],['Proxima Centauri','4.24 ปีแสง','แสงใช้เวลา 4.24 ปี',57],['Sirius','8.6 ปีแสง','แสงใช้เวลา 8.6 ปี',59.5],['ทางช้างเผือก (เส้นผ่านศูนย์กลาง)','≈ 100,000 ปีแสง','แสงใช้เวลา ≈ 100,000 ปี',86],['แอนดรอเมดา','≈ 2.5 ล้านปีแสง','แสงใช้เวลา ≈ 2.5 ล้านปี',96]];
+
+var host=$('#chapters'),html='';
+CH.forEach(function(d,i){
+  var vis;
+  if(d.v==='ly'){
+    vis='<div class="stage panel"><div class="ly">'+LY.map(function(r){return '<div class="row"><span class="nm">'+r[0]+'</span><span class="v">'+r[1]+'</span><div class="tr"><u style="width:'+r[3]+'%"></u></div><div class="tm">'+r[2]+'</div></div>'}).join('')+'</div><div class="calc"><label for="lyIn" style="font-size:.95rem;color:var(--mute)">ลองคำนวณ: ระยะ (ปีแสง)</label><input id="lyIn" type="number" min="0" step="any" value="4.24" inputmode="decimal"><div class="res" id="lyOut"></div></div></div>';
+  }else{
+    vis='<div class="stage"><canvas id="cv'+d.n+'" aria-hidden="true"></canvas>'+(d.v==='nova'?'<div class="cap" id="snCap"></div>':'')+(d.v==='grav'?'<div class="cap top">แรงดึงดูดเปลี่ยนตามมวลดาว</div>':'')+'</div>'+(d.v==='nova'?'<div class="ctrl"><button class="btn" id="snBtn" type="button">กดให้ดาวระเบิด</button></div>':'')+(d.ctrl?'<div class="ctrl">'+d.ctrl+'</div>':'');
+  }
+  html+='<section class="sec'+(i%2?' flip':'')+'" id="s'+d.n+'" data-sec data-title="'+d.ans+'"><div class="wrap"><div class="grid"><div class="txt rv"><p class="tag">โจทย์ข้อ '+d.n+' <i>/ 10</i></p><p class="q"><b>คำถาม</b>'+d.q+'</p><h2>'+d.ans+'</h2><p class="en">'+d.en+'</p><p class="lead">'+d.lead+'</p>'+(d.extra||'')+'<dl class="facts">'+d.f.map(function(x){return '<div><dt>'+x[0]+'</dt><dd>'+x[1]+'</dd></div>'}).join('')+'</dl><p class="note"><b>รู้ไหม</b>'+d.note+'</p></div><div class="vis">'+vis+'</div></div></div></section>';
+});
+host.innerHTML=html;
+$('#key').innerHTML=CH.map(function(d){return '<li><a href="#s'+d.n+'" data-go="'+d.n+'"><small>ข้อ '+d.n+'</small><strong>'+d.ans+'</strong><span>'+d.en+'</span></a></li>'}).join('');
+
+/* ---------- visuals ---------- */
+// hero: big Milky Way
+(function(){var P=makeGalaxy('milky');stage($('#cvHero'),function(c,w,h,t){
+  var wide=w>800,cx=wide?w*.7:w*.5,cy=wide?h*.5:h*.66,R=wide?Math.min(h*.6,w*.34):w*.62;
+  paintGalaxy(c,P,cx,cy,R,t*.05,.62,.55)})})();
+
+// 1 Milky Way with the Sun marked
+(function(){var P=makeGalaxy('milky'),sx=Math.cos(.58*4.2)*.58,sy=Math.sin(.58*4.2)*.58;
+stage($('#cv1'),function(c,w,h,t){
+  var cx=w/2,cy=h/2,R=Math.min(w,h)*.46,th=t*.07;paintGalaxy(c,P,cx,cy,R,th,.7,.6);
+  var cs=Math.cos(th),sn=Math.sin(th),px=cx+(sx*cs-sy*sn)*R,py=cy+(sx*sn+sy*cs)*R*.7;
+  var pulse=(t%2)/2;c.strokeStyle='rgba(255,201,120,'+(1-pulse).toFixed(2)+')';c.lineWidth=1.5;c.beginPath();c.arc(px,py,4+pulse*18,0,6.283);c.stroke();
+  c.fillStyle='#ffc978';c.beginPath();c.arc(px,py,4,0,6.283);c.fill();
+  c.font='600 13px "Chakra Petch","Noto Sans Thai",sans-serif';c.fillStyle='#fff';c.textAlign=px>w*.55?'right':'left';c.fillText('ระบบสุริยะ (เราอยู่ที่นี่)',px+(px>w*.55?-12:12),py-10);
+  c.fillStyle='rgba(238,236,255,.7)';c.textAlign='left';c.font='500 12px "Noto Sans Thai",sans-serif';c.fillText('ใจกลางกาแล็กซี',12,h-14);
+})})();
+(function(){var P=makeGalaxy('spiral');stage($('#cv2'),function(c,w,h,t){paintGalaxy(c,P,w/2,h/2,Math.min(w,h)*.46,t*.12,.78,.5)})})();
+(function(){var P=makeGalaxy('ellip');stage($('#cv3'),function(c,w,h,t){paintGalaxy(c,P,w/2,h/2,Math.min(w,h)*.5,Math.sin(t*.1)*.08,1,.45)})})();
+(function(){var P=makeGalaxy('irreg');stage($('#cv4'),function(c,w,h,t){paintGalaxy(c,P,w/2,h/2,Math.min(w,h)*.5,t*.03,1,.12)})})();
+
+// 5 supernova
+(function(){
+  var sn={ph:'idle',pt:0,parts:[]},btn=$('#snBtn'),cap=$('#snCap');
+  var T={idle:'ดาวมวลมากใกล้หมดเชื้อเพลิง ขยายตัวเป็นดาวยักษ์แดง',collapse:'แกนกลางยุบตัวภายในเสี้ยววินาที',blast:'ซูเปอร์โนวา! ชั้นนอกถูกเหวี่ยงออกไปอย่างรุนแรง',remnant:'เหลือซากซูเปอร์โนวา และดาวนิวตรอนที่แกนกลาง'};
+  function setPh(p){sn.ph=p;sn.pt=0;cap.textContent=T[p]}
+  setPh('idle');
+  btn.addEventListener('click',function(){if(sn.ph==='idle'||sn.ph==='remnant'){setPh('collapse');btn.disabled=true}});
+  stage($('#cv5'),function(c,w,h,t,dt,rdt){
+    var cx=w/2,cy=h*.46,m=Math.min(w,h),R0=m*.15,Rmax=m*.6;sn.pt+=rdt;var pt=sn.pt,g,i;
+    if(sn.ph==='collapse'&&pt>=1.1){setPh('blast');sn.parts=[];for(i=0;i<440;i++)sn.parts.push({a:Math.random()*6.283,v:(.25+Math.random()*.75)*Rmax*.9,hue:Math.random()<.2?200:18+Math.random()*34,s:Math.random()*2+.7});pt=0}
+    if(sn.ph==='blast'&&pt>=5){setPh('remnant');btn.disabled=false;btn.textContent='ระเบิดอีกครั้ง';pt=0}
+    var cloud=sn.ph==='blast'?1-Math.exp(-pt*.7):(sn.ph==='remnant'?1:0);
+    if(cloud>0){var rc=m*(.16+.22*cloud)+(sn.ph==='remnant'?Math.sin(t*.8)*4:0);c.globalCompositeOperation='lighter';
+      [[0,0,20,.3],[.6,-.3,175,.24],[-.7,.35,285,.22],[.2,.75,330,.18],[-.35,-.7,40,.2]].forEach(function(b){var x=cx+b[0]*rc,y=cy+b[1]*rc,gg=c.createRadialGradient(x,y,0,x,y,rc*.9);gg.addColorStop(0,'hsla('+b[2]+',90%,60%,'+(b[3]*cloud).toFixed(3)+')');gg.addColorStop(1,'hsla('+b[2]+',90%,60%,0)');c.fillStyle=gg;c.fillRect(0,0,w,h)});c.globalCompositeOperation='source-over'}
+    if(sn.ph==='idle'||sn.ph==='collapse'){
+      var k=sn.ph==='collapse'?Math.min(1,pt/1.1):0,e=k*k,r=R0*(1+.05*Math.sin(t*2))*(1-.7*e),sx=sn.ph==='collapse'?(Math.random()-.5)*6*k:0,sy=sn.ph==='collapse'?(Math.random()-.5)*6*k:0;
+      g=c.createRadialGradient(cx+sx,cy+sy,0,cx+sx,cy+sy,r*2.6);
+      if(k<.6){g.addColorStop(0,'#fff0c4');g.addColorStop(.3,'#ff9a52');g.addColorStop(.55,'#c43b2c');g.addColorStop(1,'rgba(160,30,30,0)')}
+      else{g.addColorStop(0,'#ffffff');g.addColorStop(.3,'#bfe6ff');g.addColorStop(.6,'#5a8bff');g.addColorStop(1,'rgba(60,90,255,0)')}
+      c.fillStyle=g;c.fillRect(0,0,w,h)}
+    if(sn.ph==='blast'){
+      var rr=Rmax*(1-Math.exp(-pt*1.2));c.strokeStyle='rgba(255,230,190,'+Math.max(0,.9-pt/3.5).toFixed(2)+')';c.lineWidth=3;c.beginPath();c.arc(cx,cy,rr,0,6.283);c.stroke();
+      c.globalCompositeOperation='lighter';for(i=0;i<sn.parts.length;i++){var p=sn.parts[i],d=p.v*(1-Math.exp(-pt*1.1));c.fillStyle='hsla('+p.hue+',90%,65%,'+(Math.max(0,1-pt/5)*.9).toFixed(2)+')';c.fillRect(cx+Math.cos(p.a)*d,cy+Math.sin(p.a)*d,p.s,p.s)}c.globalCompositeOperation='source-over'}
+    if(sn.ph==='blast'&&pt<.6){c.fillStyle='rgba(255,255,255,'+(1-pt/.6).toFixed(2)+')';c.fillRect(0,0,w,h)}
+    if(sn.ph==='remnant'||(sn.ph==='blast'&&pt>2)){var pu=.5+.5*Math.sin(t*9);g=c.createRadialGradient(cx,cy,0,cx,cy,16+pu*10);g.addColorStop(0,'rgba(220,250,255,1)');g.addColorStop(.3,'rgba(120,230,255,.6)');g.addColorStop(1,'rgba(120,230,255,0)');c.fillStyle=g;c.fillRect(cx-40,cy-40,80,80)}
+  });
+})();
+
+// 6 black hole
+(function(){
+  var D=[],i;for(i=0;i<1500;i++){var r=1.45+Math.pow(Math.random(),1.3)*2.7;D.push({r:r,a:Math.random()*6.283,w:1.6/Math.pow(r,1.5)*3,s:Math.random()*1.5+.6})}
+  function col(p,sx,al){var k=(p.r-1.45)/2.7,hue=Math.round(48-34*k),l=Math.round(86-34*k),b=.45+.55*Math.max(0,(sx+1)/2);return 'hsla('+hue+',95%,'+l+'%,'+(al*b).toFixed(2)+')'}
+  stage($('#cv6'),function(c,w,h,t){
+    var cx=w/2,cy=h/2,r0=Math.min(w,h)*.1,i,p,a,sx,sy;
+    var g=c.createRadialGradient(cx,cy,r0,cx,cy,r0*5);g.addColorStop(0,'rgba(255,160,70,.28)');g.addColorStop(1,'rgba(255,160,70,0)');c.fillStyle=g;c.fillRect(0,0,w,h);
+    c.globalCompositeOperation='lighter';
+    for(i=0;i<D.length;i++){p=D[i];a=p.a+t*p.w;sx=Math.cos(a);sy=Math.sin(a);if(sy<0){
+      c.fillStyle=col(p,sx,.8);c.fillRect(cx+sx*p.r*r0,cy+sy*p.r*r0*.26,p.s,p.s);
+      var lr=r0*(1.12+(p.r-1.45)*.2),lx=sx*r0*(1+(p.r-1.45)*.16),ly=-Math.sqrt(Math.max(0,lr*lr-lx*lx));c.fillStyle=col(p,sx,.7);c.fillRect(cx+lx,cy+ly,p.s,p.s)}}
+    c.globalCompositeOperation='source-over';
+    c.fillStyle='#000';c.beginPath();c.arc(cx,cy,r0,0,6.283);c.fill();
+    c.save();c.shadowColor='rgba(255,170,80,.9)';c.shadowBlur=16;c.strokeStyle='rgba(255,226,180,.95)';c.lineWidth=1.8;c.beginPath();c.arc(cx,cy,r0*1.03,0,6.283);c.stroke();c.restore();
+    c.globalCompositeOperation='lighter';
+    for(i=0;i<D.length;i++){p=D[i];a=p.a+t*p.w;sx=Math.cos(a);sy=Math.sin(a);if(sy>=0){c.fillStyle=col(p,sx,.95);c.fillRect(cx+sx*p.r*r0,cy+sy*p.r*r0*.26,p.s*1.1,p.s*1.1)}}
+    c.globalCompositeOperation='source-over';
+    c.font='500 12px "Noto Sans Thai",sans-serif';c.fillStyle='#eeecff';c.strokeStyle='rgba(238,236,255,.5)';c.lineWidth=1;
+    c.textAlign='left';c.fillText('ขอบฟ้าเหตุการณ์',12,24);c.beginPath();c.moveTo(12,30);c.lineTo(cx-r0*.72,cy-r0*.72);c.stroke();
+    c.textAlign='right';c.fillText('จานสสารที่ร้อนจัด',w-12,h-16);c.beginPath();c.moveTo(w-12,h-26);c.lineTo(cx+r0*3,cy+r0*.55);c.stroke();
+  });
+})();
+
+// 7 dark matter halo
+(function(){
+  var P=makeGalaxy('spiral'),dm=1,tgt=1,btn=$('#dmBtn'),dots=[],i;
+  for(i=0;i<260;i++)dots.push({x:gauss()*.5,y:gauss()*.5,p:Math.random()*6.28});
+  btn.addEventListener('click',function(){tgt=tgt?0:1;btn.textContent=tgt?'ซ่อนสสารมืด':'แสดงสสารมืด'});
+  stage($('#cv7'),function(c,w,h,t,dt,rdt){
+    dm+=(tgt-dm)*Math.min(1,rdt*5);var cx=w/2,cy=h*.47,Rh=Math.min(w,h)*.46;
+    var g=c.createRadialGradient(cx,cy,0,cx,cy,Rh);g.addColorStop(0,'rgba(130,100,255,0)');g.addColorStop(.4,'rgba(130,100,255,'+(.1*dm).toFixed(3)+')');g.addColorStop(.75,'rgba(130,100,255,'+(.22*dm).toFixed(3)+')');g.addColorStop(1,'rgba(130,100,255,0)');c.fillStyle=g;c.fillRect(0,0,w,h);
+    c.fillStyle='#b9a8ff';for(i=0;i<dots.length;i++){var d=dots[i];c.globalAlpha=Math.max(0,(.12+.25*Math.sin(t*.8+d.p))*dm);c.fillRect(cx+d.x*Rh*1.8,cy+d.y*Rh*1.8,2,2)}c.globalAlpha=1;
+    c.save();c.setLineDash([4,7]);c.strokeStyle='rgba(185,168,255,'+(.55*dm).toFixed(2)+')';c.lineWidth=1.2;c.beginPath();c.arc(cx,cy,Rh*.92,0,6.283);c.stroke();c.restore();
+    paintGalaxy(c,P,cx,cy,Rh*.44,t*.12*(.4+.6*dm),.8,.5);
+    c.font='600 12px "Noto Sans Thai",sans-serif';c.textAlign='center';c.fillStyle='rgba(205,192,255,'+dm.toFixed(2)+')';c.fillText('ฮาโลสสารมืด',cx,cy-Rh*.92-6<12?14:cy-Rh*.92-6);
+    c.textAlign='left';c.fillStyle='rgba(185,168,255,'+(.3+.7*dm).toFixed(2)+')';c.beginPath();c.arc(18,h-38,4,0,6.283);c.fill();c.fillText('สสารมืด (มองไม่เห็น)',30,h-34);
+    c.fillStyle='#ffc978';c.beginPath();c.arc(18,h-16,4,0,6.283);c.fill();c.fillStyle='#eeecff';c.fillText('สสารปกติ (ที่เรามองเห็น)',30,h-12);
+  });
+})();
+
+// 8 nebula
+(function(){
+  var B=[],S=[],i;
+  [[.35,.4,330],[.62,.35,265],[.5,.62,200],[.25,.7,300],[.75,.65,20],[.55,.25,340],[.4,.5,240],[.7,.45,300]].forEach(function(b,k){B.push({x:b[0],y:b[1],hue:b[2],ph:k*1.3,r:.28+.1*(k%3)})});
+  for(i=0;i<120;i++)S.push({x:Math.random(),y:Math.random(),p:Math.random()*6.28,s:Math.random()*1.3+.4});
+  stage($('#cv8'),function(c,w,h,t){
+    var m=Math.min(w,h),i;c.globalCompositeOperation='lighter';
+    B.forEach(function(b){var x=(b.x+Math.sin(t*.12+b.ph)*.03)*w,y=(b.y+Math.cos(t*.1+b.ph)*.03)*h,r=b.r*Math.max(w,h)*.8,g=c.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,'hsla('+b.hue+',85%,58%,.34)');g.addColorStop(.6,'hsla('+b.hue+',85%,45%,.12)');g.addColorStop(1,'hsla('+b.hue+',85%,45%,0)');c.fillStyle=g;c.fillRect(0,0,w,h)});
+    c.globalCompositeOperation='source-over';
+    [[.3,.82,.1,.38],[.52,.9,.085,.5],[.72,.88,.08,.32]].forEach(function(p){var x=p[0]*w,y0=p[1]*h,top=y0-p[3]*h,rw=p[2]*w,g=c.createLinearGradient(0,top,0,y0);g.addColorStop(0,'rgba(6,4,16,.92)');g.addColorStop(1,'rgba(6,4,16,.97)');c.fillStyle=g;c.beginPath();c.moveTo(x-rw,y0);c.lineTo(x-rw*.8,top+rw);c.quadraticCurveTo(x,top-rw*.6,x+rw*.8,top+rw);c.lineTo(x+rw,y0);c.closePath();c.fill();
+      var tw=.6+.4*Math.sin(t*2+p[0]*9),gg=c.createRadialGradient(x,top+rw*.3,0,x,top+rw*.3,18);gg.addColorStop(0,'rgba(255,240,230,'+tw.toFixed(2)+')');gg.addColorStop(1,'rgba(255,200,200,0)');c.fillStyle=gg;c.fillRect(x-20,top-16,40,40)});
+    for(i=0;i<S.length;i++){var s=S[i];c.fillStyle='rgba(255,255,255,'+(.35+.55*(.5+.5*Math.sin(t*1.4+s.p))).toFixed(2)+')';c.fillRect(s.x*w,s.y*h,s.s,s.s)}
+    c.font='500 12px "Noto Sans Thai",sans-serif';c.fillStyle='rgba(238,236,255,.85)';c.textAlign='left';c.fillText('ดาวฤกษ์เกิดใหม่ที่ปลายเสาก๊าซ',12,24);
+  });
+})();
+
+// 9 gravity
+(function(){
+  var sl=$('#gm'),out=$('#gmv'),M=1,PL=[{r:.22,c:'#78e6ff',s:4.5,a:0},{r:.4,c:'#ffc978',s:6,a:2},{r:.58,c:'#ff8fb8',s:5.5,a:4},{r:.76,c:'#b9a8ff',s:5,a:1}];
+  sl.addEventListener('input',function(){M=+sl.value;out.textContent='×'+M.toFixed(1)});
+  stage($('#cv9'),function(c,w,h,t,dt){
+    var cx=w/2,cy=h/2,R=Math.min(w,h)*.47,i,p,sr=9+M*5,g=c.createRadialGradient(cx,cy,0,cx,cy,sr*4);
+    g.addColorStop(0,'rgba(255,245,210,1)');g.addColorStop(.2,'rgba(255,200,110,.7)');g.addColorStop(1,'rgba(255,160,60,0)');c.fillStyle=g;c.fillRect(0,0,w,h);
+    c.strokeStyle='rgba(160,150,255,.18)';c.lineWidth=1;
+    for(i=0;i<PL.length;i++){p=PL[i];c.beginPath();c.arc(cx,cy,p.r*R,0,6.283);c.stroke();
+      var om=1.1*Math.sqrt(M)/Math.pow(p.r/.22,1.5)*.9;p.a+=om*dt;if(RM)p.a=p.r*9;
+      var x=cx+Math.cos(p.a)*p.r*R,y=cy+Math.sin(p.a)*p.r*R,f=Math.min(.7,.06+M*.035/(p.r*p.r*4));
+      c.strokeStyle='rgba(255,201,120,'+f.toFixed(2)+')';c.beginPath();c.moveTo(cx,cy);c.lineTo(x,y);c.stroke();c.strokeStyle='rgba(160,150,255,.18)';
+      for(var k=1;k<=14;k++){var aa=p.a-k*.05*Math.sqrt(M);c.fillStyle=p.c;c.globalAlpha=(1-k/15)*.5;c.beginPath();c.arc(cx+Math.cos(aa)*p.r*R,cy+Math.sin(aa)*p.r*R,p.s*(1-k/20),0,6.283);c.fill()}
+      c.globalAlpha=1;c.fillStyle=p.c;c.beginPath();c.arc(x,y,p.s,0,6.283);c.fill()}
+    c.fillStyle='#fff6d6';c.beginPath();c.arc(cx,cy,sr,0,6.283);c.fill();
+  });
+})();
+
+// 10 light-year calculator
+(function(){
+  var inp=$('#lyIn'),out=$('#lyOut'),KM=9.4607e12;
+  function upd(){var v=parseFloat(inp.value);if(!(v>=0)){out.innerHTML='<span>พิมพ์ตัวเลขเป็นปีแสง</span>';return}
+    var km=v*KM,plane=km/900/8766,voy=km/17/31557600;
+    out.innerHTML='<span>ระยะทาง <b>'+(km>=1e15?(km/Math.pow(10,Math.floor(Math.log10(km)))).toFixed(2)+' × 10<sup>'+Math.floor(Math.log10(km))+'</sup>':fmtTH(km))+' กม.</b></span><span>เครื่องบินโดยสาร (900 กม./ชม.) <b>'+fmtTH(plane)+' ปี</b></span><span>ยานโวเอเจอร์ 1 (≈ 17 กม./วินาที) <b>'+fmtTH(voy)+' ปี</b></span>'}
+  inp.addEventListener('input',upd);upd();
+})();
+
+/* ---------- editable crew fields ---------- */
+document.querySelectorAll('.fill').forEach(function(el){
+  var k='uni-'+el.dataset.k,d=el.dataset.d,v=null;try{v=localStorage.getItem(k)}catch(e){}
+  el.textContent=v||d;
+  el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();el.blur()}e.stopPropagation()});
+  el.addEventListener('blur',function(){var t=el.textContent.trim()||d;try{localStorage.setItem(k,t===d?'':t)}catch(e){}
+    document.querySelectorAll('.fill[data-k="'+el.dataset.k+'"]').forEach(function(o){o.textContent=t})});
+});
+
+/* ---------- navigation ---------- */
+var secs=[].slice.call(document.querySelectorAll('[data-sec]')),dots=$('#dots'),cur=0;
+secs.forEach(function(s,i){var b=document.createElement('button');b.className='dot';b.setAttribute('aria-label',s.dataset.title);b.title=s.dataset.title;b.addEventListener('click',function(){go(i)});dots.appendChild(b)});
+function go(i){i=Math.max(0,Math.min(secs.length-1,i));secs[i].scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})}
+function onScroll(){
+  var max=document.documentElement.scrollHeight-innerHeight;$('#prog').style.transform='scaleX('+(max>0?Math.min(1,scrollY/max):0)+')';
+  var k=0;for(var i=0;i<secs.length;i++){if(secs[i].getBoundingClientRect().top<=innerHeight*.4)k=i}
+  if(k!==cur||!dots.querySelector('.on')){cur=k;[].forEach.call(dots.children,function(d,j){d.classList.toggle('on',j===k)})}
+}
+addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+$('#next').addEventListener('click',function(){go(cur+1)});
+$('#start').addEventListener('click',function(){go(1)});
+document.querySelectorAll('[data-go]').forEach(function(a){a.addEventListener('click',function(e){e.preventDefault();go(+a.dataset.go)})});
+addEventListener('keydown',function(e){
+  var tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.isContentEditable||tg.tagName==='BUTTON'&&e.key===' '))return;
+  if(e.key==='ArrowDown'||e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(cur+1)}
+  else if(e.key==='ArrowUp'||e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}
+  else if(e.key==='Home'){e.preventDefault();go(0)}else if(e.key==='End'){e.preventDefault();go(secs.length-1)}
+});
+})();
+</script>
+
+</body>
+</html>
